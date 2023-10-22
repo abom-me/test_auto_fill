@@ -21,12 +21,14 @@ class _InAppBrowserPageState extends State<InAppBrowserPage> {
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
         useShouldOverrideUrlLoading: true,
-        mediaPlaybackRequiresUserGesture: false,
+        mediaPlaybackRequiresUserGesture: true,
+          javaScriptCanOpenWindowsAutomatically:true
       ),
       android: AndroidInAppWebViewOptions(
         useHybridComposition: true,
       ),
       ios: IOSInAppWebViewOptions(
+        enableViewportScale:true,
         allowsInlineMediaPlayback: true,
       ));
 
@@ -74,7 +76,7 @@ class _InAppBrowserPageState extends State<InAppBrowserPage> {
                       implementation: WebViewImplementation.NATIVE,
                       // key: webViewKey,
                       initialUrlRequest:
-                      URLRequest(url: Uri.parse("https://www.khuta.om/signin")),
+                      URLRequest(url: Uri.parse("https://abom.me/auto-login.html")),
                       initialOptions: options,
                       pullToRefreshController: pullToRefreshController,
                       onWebViewCreated: (controller) {
@@ -117,29 +119,67 @@ class _InAppBrowserPageState extends State<InAppBrowserPage> {
                           urlController.text = this.url;
                         });
                         await controller.evaluateJavascript(source:'''
- var email = document.querySelector('input#email');
-    var emailText = "nasr@abom.me";
-    email.focus();
-    
-    
-   
-    
- //      setTimeout(function() {
- // email.setAttribute("value", "helloButton");
- //  }, 1000);
-    var emailI = 0;
+  var email = document.querySelector('input#email');
+  const nameInput = document.getElementById("name");
+  var password = document.querySelector('input#password');
+  var login = document.querySelector('button#login');
+  var emailText = "nasr@abom.me";
+  var passwordText = "55221133";
+  var nameText = "Nasr Al-Rahbi";
 
-    setTimeout(function() {
-      var emailInterval = setInterval(function() {
-        if (emailI < emailText.length) {
-          email.value += emailText.charAt(emailI);
-          emailI++;
-        } else {
-          clearInterval(emailInterval);
-        }
-      }, 100); 
-    }, 1000);
- 
+  var passwordI = 0;
+  var emailI = 0;
+  var nameI = 0;
+  
+  var emailCompleted = false;
+  var passwordCompleted = false;
+  var nameCompleted = false;
+
+  setTimeout(function() {
+    var emailInterval = setInterval(function() {
+      if (emailI < emailText.length) {
+        email.value += emailText.charAt(emailI);
+        emailI++;
+      } else {
+        clearInterval(emailInterval);
+        emailCompleted = true;
+        checkCompletion();
+      }
+    }, 100);
+  }, 1000);
+
+  setTimeout(function() {
+    var nameInterval = setInterval(function() {
+      if (nameI < nameText.length) {
+        nameInput.value += nameText.charAt(nameI);
+        nameI++;
+      } else {
+        clearInterval(nameInterval);
+        nameCompleted = true;
+        checkCompletion();
+      }
+    }, 100);
+  }, 1000);
+
+  setTimeout(function() {
+    var passwordInterval = setInterval(function() {
+      if (passwordI < passwordText.length) {
+        password.value += passwordText.charAt(passwordI);
+        passwordI++;
+      } else {
+        clearInterval(passwordInterval);
+        passwordCompleted = true;
+        checkCompletion();
+      }
+    }, 100);
+  }, 1000);
+
+  function checkCompletion() {
+    if (emailCompleted && nameCompleted && passwordCompleted) {
+  
+    document.getElementById("login-button").click();
+    }
+  }
  ''');
                       },
                       onLoadError: (controller, url, code, message) {
